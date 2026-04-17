@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSP Violation Receiver — Aleph Void</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary:   #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-card:      #16161f;
+      --border:       #1e1e2e;
+      --text-primary:   #e4e4e7;
+      --text-secondary: #a1a1aa;
+      --text-muted:     #71717a;
+      --accent:       #6d28d9;
+      --accent-light: #8b5cf6;
+      --accent-glow:  rgba(139, 92, 246, 0.15);
+      --danger:       #dc2626;
+      --danger-glow:  rgba(220, 38, 38, 0.15);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    /* Nav */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1rem 2rem;
+      background: rgba(10, 10, 15, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo-mark {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    .logo-mark svg {
+      height: 44px;
+      width: 44px;
+      background-color: #fff;
+      border-radius: 6px;
+      border: 2px solid var(--accent);
+    }
+
+    .logo-mark span {
+      font-weight: 600;
+      font-size: 1rem;
+      letter-spacing: -0.01em;
+    }
+
+    .logo-mark .page-title {
+      color: var(--text-secondary);
+      font-weight: 400;
+      font-size: 0.875rem;
+      padding-left: 0.75rem;
+      margin-left: 0.75rem;
+      border-left: 1px solid var(--border);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .nav-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      transition: background 0.3s;
+    }
+
+    .status-dot.live {
+      background: #22c55e;
+      box-shadow: 0 0 6px rgba(34, 197, 94, 0.5);
+      animation: pulse-green 2s infinite;
+    }
+
+    @keyframes pulse-green {
+      0%, 100% { box-shadow: 0 0 4px rgba(34, 197, 94, 0.4); }
+      50%       { box-shadow: 0 0 10px rgba(34, 197, 94, 0.8); }
+    }
+
+    /* Main layout */
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 6rem 2rem 4rem;
+    }
+
+    /* Page header */
+    .page-header {
+      margin-bottom: 2rem;
+    }
+
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent-light);
+      margin-bottom: 0.5rem;
+    }
+
+    .page-header h1 {
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-header p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    /* Controls bar */
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .control-group label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .control-group input[type="date"] {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-primary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      padding: 0.4rem 0.75rem;
+      outline: none;
+      transition: border-color 0.2s;
+      color-scheme: dark;
+    }
+
+    .control-group input[type="date"]:focus {
+      border-color: var(--accent-light);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--accent-glow);
+      border: 1px solid rgba(139, 92, 246, 0.25);
+      color: var(--accent-light);
+    }
+
+    .badge.danger {
+      background: var(--danger-glow);
+      border-color: rgba(220, 38, 38, 0.25);
+      color: #f87171;
+    }
+
+    /* Table */
+    .table-wrap {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    thead th {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-size: 0.7rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background: rgba(139, 92, 246, 0.05);
+    }
+
+    tbody tr.selected {
+      background: var(--accent-glow);
+    }
+
+    tbody tr.new-row {
+      animation: flash-in 0.6s ease-out;
+    }
+
+    @keyframes flash-in {
+      from { background: rgba(139, 92, 246, 0.25); }
+      to   { background: transparent; }
+    }
+
+    td {
+      padding: 0.75rem 1rem;
+      color: var(--text-secondary);
+      vertical-align: middle;
+    }
+
+    td.mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+    }
+
+    td .directive-tag {
+      display: inline-block;
+      background: var(--accent-glow);
+      border: 1px solid rgba(139, 92, 246, 0.25);
+      color: var(--accent-light);
+      border-radius: 4px;
+      padding: 0.1rem 0.45rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+    }
+
+    td .uri {
+      color: var(--text-primary);
+      max-width: 280px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: block;
+    }
+
+    td .uri.blocked {
+      color: #f87171;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .empty-state .icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .empty-state p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .empty-state code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      color: var(--accent-light);
+    }
+
+    /* Detail panel */
+    .detail-panel {
+      margin-top: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .detail-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.875rem 1.25rem;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .detail-header h2 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent-light);
+      letter-spacing: 0.02em;
+    }
+
+    .detail-header button {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .detail-header button:hover {
+      border-color: var(--accent-light);
+      color: var(--text-primary);
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 0;
+    }
+
+    .detail-field {
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+    }
+
+    .detail-field:last-child {
+      border-right: none;
+    }
+
+    .detail-field .field-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .detail-field .field-value {
+      font-size: 0.82rem;
+      color: var(--text-primary);
+      word-break: break-all;
+    }
+
+    .detail-field .field-value.mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--accent-light);
+    }
+
+    .detail-field .field-value.null-val {
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .raw-json {
+      padding: 1.25rem;
+    }
+
+    .raw-json pre {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+
+    /* Endpoint bar */
+    .endpoint-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1.75rem;
+      flex-wrap: wrap;
+    }
+
+    .endpoint-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .endpoint-url {
+      flex: 1;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: var(--accent-light);
+      word-break: break-all;
+      min-width: 0;
+    }
+
+    .copy-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-secondary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      padding: 0.35rem 0.75rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+
+    .copy-btn:hover {
+      border-color: var(--accent-light);
+      color: var(--text-primary);
+    }
+
+    .copy-btn.copied {
+      border-color: #22c55e;
+      color: #22c55e;
+      background: rgba(34, 197, 94, 0.08);
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      border-top: 1px solid var(--border);
+      margin-top: 4rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      nav { padding: 0.75rem 1rem; }
+      .logo-mark .page-title { display: none; }
+      main { padding: 5rem 1rem 3rem; }
+
+      thead th:nth-child(3),
+      td:nth-child(3),
+      thead th:nth-child(4),
+      td:nth-child(4) { display: none; }
+
+      .detail-grid { grid-template-columns: 1fr; }
+      .detail-field { border-right: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+    <symbol id="logo-symbol" viewBox="0 0 256 256">
+      <path fill="#000000" fill-rule="evenodd" d="M 74 24 L 69 29 L 65 36 L 65 39 L 64 40 L 65 49 L 67 52 L 67 54 L 69 56 L 72 62 L 76 66 L 76 67 L 91 82 L 93 83 L 93 84 L 81 92 L 70 103 L 65 113 L 65 124 L 70 134 L 70 136 L 72 139 L 72 142 L 73 143 L 73 145 L 70 152 L 66 156 L 66 162 L 67 164 L 103 164 L 108 155 L 109 147 L 108 146 L 108 143 L 106 138 L 101 131 L 89 118 L 85 110 L 85 104 L 88 98 L 93 93 L 98 90 L 100 90 L 134 125 L 134 126 L 140 132 L 140 133 L 153 148 L 165 165 L 168 164 L 173 159 L 176 154 L 176 152 L 177 151 L 177 139 L 172 130 L 157 113 L 153 107 L 152 102 L 151 101 L 151 89 L 152 88 L 152 84 L 153 83 L 154 77 L 156 73 L 162 67 L 168 67 L 169 68 L 171 68 L 173 70 L 175 69 L 175 65 L 176 64 L 176 43 L 174 39 L 168 35 L 159 34 L 158 32 L 157 33 L 148 32 L 144 30 L 141 27 L 141 23 L 139 23 L 134 29 L 131 36 L 131 42 L 130 43 L 131 54 L 133 58 L 137 62 L 141 64 L 144 64 L 145 66 L 146 65 L 150 65 L 151 66 L 151 68 L 147 72 L 143 78 L 143 80 L 141 83 L 141 86 L 140 87 L 140 92 L 139 93 L 137 93 L 100 54 L 100 53 L 95 48 L 95 47 L 85 35 L 79 26 L 78 23 Z"/>
+      <text x="186" y="176" font-family="'EB Garamond', Georgia, serif" font-size="18" fill="#000000">0</text>
+      <text x="128" y="236" text-anchor="middle" font-family="'EB Garamond', Georgia, serif" font-size="20" fill="#000000">Aleph Void</text>
+    </symbol>
+  </svg>
+
+  <div id="app">
+    <nav>
+      <div class="nav-inner">
+        <a href="https://alephvoid.com" class="logo-mark">
+          <svg aria-label="Aleph Void"><use href="#logo-symbol"/></svg>
+          <span>Aleph Void</span>
+          <span class="page-title">csp-receiver</span>
+        </a>
+        <div class="nav-status">
+          <span :class="['status-dot', connected ? 'live' : '']"></span>
+          <span style="color: var(--text-muted)">{{ connected ? 'live' : 'disconnected' }}</span>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <div class="page-header">
+        <p class="section-label">// Security Monitoring</p>
+        <h1>CSP Violation Reports</h1>
+        <p>Real-time Content Security Policy violations received via <code style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;background:var(--bg-card);border:1px solid var(--border);padding:0.1rem 0.35rem;border-radius:4px;color:var(--accent-light)">report-to</code> / <code style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;background:var(--bg-card);border:1px solid var(--border);padding:0.1rem 0.35rem;border-radius:4px;color:var(--accent-light)">report-uri</code></p>
+      </div>
+
+      <div class="endpoint-bar">
+        <span class="endpoint-label">Endpoint</span>
+        <span class="endpoint-url">{{ endpointUrl }}</span>
+        <button :class="['copy-btn', copied ? 'copied' : '']" @click="copyUrl">
+          {{ copied ? '&#x2713; copied' : '&#x2398; copy url' }}
+        </button>
+      </div>
+
+      <div class="controls">
+        <div class="control-group">
+          <label>Since</label>
+          <input type="date" v-model="sinceDate" @change="fetchViolations">
+        </div>
+        <span :class="['badge', violations.length > 0 ? 'danger' : '']">
+          {{ violations.length }} violation{{ violations.length !== 1 ? 's' : '' }}
+        </span>
+      </div>
+
+      <div class="table-wrap" v-if="violations.length > 0">
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Document</th>
+              <th>Violated Directive</th>
+              <th>Blocked URI</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="v in violations"
+              :key="v.id"
+              @click="toggleDetail(v)"
+              :class="{ selected: selectedViolation && selectedViolation.id === v.id, 'new-row': newIdsMap[v.id] }"
+            >
+              <td class="mono" style="white-space:nowrap;color:var(--text-muted)">{{ formatTime(v.received_at) }}</td>
+              <td><span class="uri">{{ v.document_uri || '—' }}</span></td>
+              <td><span v-if="v.violated_directive" class="directive-tag">{{ v.violated_directive }}</span><span v-else style="color:var(--text-muted)">—</span></td>
+              <td><span :class="['uri', v.blocked_uri ? 'blocked' : '']">{{ v.blocked_uri || '—' }}</span></td>
+              <td class="mono">{{ v.status_code != null ? v.status_code : '—' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div v-else class="empty-state">
+        <div class="icon">&#x1f6e1;</div>
+        <p>No violations received since <strong>{{ sinceDate }}</strong>.</p>
+        <p style="margin-top:0.75rem">Point your CSP <code>report-to</code> or <code>report-uri</code> directive to <code>POST /violations</code></p>
+      </div>
+
+      <div v-if="selectedViolation" class="detail-panel">
+        <div class="detail-header">
+          <h2>// violation #{{ selectedViolation.id }}</h2>
+          <button @click="selectedViolation = null">close ✕</button>
+        </div>
+        <div class="detail-grid">
+          <div class="detail-field">
+            <div class="field-label">Document URI</div>
+            <div :class="['field-value', selectedViolation.document_uri ? '' : 'null-val']">{{ selectedViolation.document_uri || 'null' }}</div>
+          </div>
+          <div class="detail-field">
+            <div class="field-label">Blocked URI</div>
+            <div :class="['field-value', selectedViolation.blocked_uri ? '' : 'null-val']">{{ selectedViolation.blocked_uri || 'null' }}</div>
+          </div>
+          <div class="detail-field">
+            <div class="field-label">Violated Directive</div>
+            <div class="field-value mono">{{ selectedViolation.violated_directive || '—' }}</div>
+          </div>
+          <div class="detail-field">
+            <div class="field-label">Effective Directive</div>
+            <div class="field-value mono">{{ selectedViolation.effective_directive || '—' }}</div>
+          </div>
+          <div class="detail-field">
+            <div class="field-label">Original Policy</div>
+            <div :class="['field-value', selectedViolation.original_policy ? 'mono' : 'null-val']" style="font-size:0.75rem">{{ selectedViolation.original_policy || 'null' }}</div>
+          </div>
+          <div class="detail-field">
+            <div class="field-label">Source</div>
+            <div :class="['field-value', selectedViolation.source_file ? '' : 'null-val']">
+              {{ selectedViolation.source_file ? `${selectedViolation.source_file}:${selectedViolation.line_number ?? '?'}:${selectedViolation.column_number ?? '?'}` : 'null' }}
+            </div>
+          </div>
+          <div class="detail-field">
+            <div class="field-label">Referrer</div>
+            <div :class="['field-value', selectedViolation.referrer ? '' : 'null-val']">{{ selectedViolation.referrer || 'null' }}</div>
+          </div>
+          <div class="detail-field">
+            <div class="field-label">Status Code</div>
+            <div :class="['field-value mono', selectedViolation.status_code != null ? '' : 'null-val']">{{ selectedViolation.status_code != null ? selectedViolation.status_code : 'null' }}</div>
+          </div>
+          <div class="detail-field">
+            <div class="field-label">Received At</div>
+            <div class="field-value mono">{{ selectedViolation.received_at }}</div>
+          </div>
+        </div>
+        <div class="raw-json">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:0.5rem">Raw Report</div>
+          <pre>{{ formatRaw(selectedViolation.raw) }}</pre>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      &copy; {{ year }} Aleph Void, LLC &mdash; CSP Violation Receiver
+    </footer>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.prod.js"></script>
+  <script>
+    const { createApp, ref, reactive, onMounted, computed } = Vue;
+
+    createApp({
+      setup() {
+        const violations = ref([]);
+        const connected = ref(false);
+        const selectedViolation = ref(null);
+        const newIdsMap = ref({});
+        const sinceDate = ref(new Date().toISOString().split('T')[0]);
+        const year = new Date().getFullYear();
+        const endpointUrl = `${window.location.origin}/violations`;
+        const copied = ref(false);
+
+        async function copyUrl() {
+          try {
+            await navigator.clipboard.writeText(endpointUrl);
+          } catch {
+            // Fallback for non-secure contexts
+            const el = document.createElement('textarea');
+            el.value = endpointUrl;
+            el.style.position = 'fixed';
+            el.style.opacity = '0';
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+          }
+          copied.value = true;
+          setTimeout(() => { copied.value = false; }, 2000);
+        }
+
+        const socket = io();
+
+        socket.on('connect', () => { connected.value = true; });
+        socket.on('disconnect', () => { connected.value = false; });
+
+        socket.on('initial', (data) => {
+          violations.value = data;
+        });
+
+        socket.on('violation', (v) => {
+          const since = new Date(sinceDate.value + 'T00:00:00.000Z');
+          if (new Date(v.received_at) >= since) {
+            violations.value.unshift(v);
+            newIdsMap.value = { ...newIdsMap.value, [v.id]: true };
+            setTimeout(() => {
+              const updated = { ...newIdsMap.value };
+              delete updated[v.id];
+              newIdsMap.value = updated;
+            }, 2000);
+          }
+        });
+
+        async function fetchViolations() {
+          const res = await fetch(`/violations?since=${sinceDate.value}`);
+          violations.value = await res.json();
+          selectedViolation.value = null;
+        }
+
+        function toggleDetail(v) {
+          selectedViolation.value = selectedViolation.value && selectedViolation.value.id === v.id ? null : v;
+        }
+
+        function formatTime(ts) {
+          return new Date(ts).toLocaleString(undefined, {
+            month: 'short', day: 'numeric',
+            hour: '2-digit', minute: '2-digit', second: '2-digit',
+          });
+        }
+
+        function formatRaw(raw) {
+          try { return JSON.stringify(JSON.parse(raw), null, 2); } catch { return raw; }
+        }
+
+        onMounted(fetchViolations);
+
+        return {
+          violations, connected, selectedViolation,
+          newIdsMap, sinceDate, year,
+          endpointUrl, copied, copyUrl,
+          fetchViolations, toggleDetail, formatTime, formatRaw,
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
