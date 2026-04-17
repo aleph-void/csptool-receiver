@@ -1,0 +1,55 @@
+{
+  "nav": {
+    "brand": "Aleph Void",
+    "pageTitle": "csp-接收器",
+    "live": "实时",
+    "disconnected": "已断开"
+  },
+  "page": {
+    "sectionLabel": "// 安全监控",
+    "title": "CSP 违规报告",
+    "descriptionPrefix": "通过以下方式实时接收内容安全策略违规",
+    "reportTo": "report-to",
+    "reportUri": "report-uri"
+  },
+  "endpoint": {
+    "label": "接入点",
+    "copy": "⎘ 复制链接",
+    "copied": "✓ 已复制"
+  },
+  "controls": {
+    "since": "自",
+    "violations": "无违规 | {n} 条违规 | {n} 条违规"
+  },
+  "table": {
+    "time": "时间",
+    "document": "文档",
+    "violatedDirective": "违反的指令",
+    "blockedUri": "被拦截的URI",
+    "status": "状态"
+  },
+  "empty": {
+    "noViolations": "自 {date} 起未收到违规报告。",
+    "hintPrefix": "将您的 CSP",
+    "hintOr": "或",
+    "hintSuffix": "指令指向"
+  },
+  "detail": {
+    "title": "// 违规 #{id}",
+    "close": "关闭 ✕",
+    "rawReport": "原始报告",
+    "nullValue": "空",
+    "fields": {
+      "documentUri": "文档URI",
+      "blockedUri": "被拦截的URI",
+      "violatedDirective": "违反的指令",
+      "effectiveDirective": "有效指令",
+      "originalPolicy": "原始策略",
+      "source": "来源",
+      "referrer": "来源页面",
+      "statusCode": "状态码",
+      "receivedAt": "接收时间"
+    }
+  },
+  "footer": "© {year} Aleph Void, LLC — CSP 违规接收器"
+}
