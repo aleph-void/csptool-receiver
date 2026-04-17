@@ -1,0 +1,55 @@
+{
+  "nav": {
+    "brand": "Aleph Void",
+    "pageTitle": "csp-receiver",
+    "live": "接続中",
+    "disconnected": "切断"
+  },
+  "page": {
+    "sectionLabel": "// セキュリティ監視",
+    "title": "CSP 違反レポート",
+    "descriptionPrefix": "以下を通じて受信したリアルタイムの Content Security Policy 違反",
+    "reportTo": "report-to",
+    "reportUri": "report-uri"
+  },
+  "endpoint": {
+    "label": "エンドポイント",
+    "copy": "⎘ URL をコピー",
+    "copied": "✓ コピーしました"
+  },
+  "controls": {
+    "since": "開始",
+    "violations": "違反なし | {n} 件の違反 | {n} 件の違反"
+  },
+  "table": {
+    "time": "時刻",
+    "document": "ドキュメント",
+    "violatedDirective": "違反したディレクティブ",
+    "blockedUri": "ブロックされた URI",
+    "status": "ステータス"
+  },
+  "empty": {
+    "noViolations": "{date} 以降、違反は受信されていません。",
+    "hintPrefix": "CSP の",
+    "hintOr": "または",
+    "hintSuffix": "ディレクティブの送信先に指定してください"
+  },
+  "detail": {
+    "title": "// 違反 #{id}",
+    "close": "閉じる ✕",
+    "rawReport": "生レポート",
+    "nullValue": "null",
+    "fields": {
+      "documentUri": "ドキュメント URI",
+      "blockedUri": "ブロックされた URI",
+      "violatedDirective": "違反したディレクティブ",
+      "effectiveDirective": "有効なディレクティブ",
+      "originalPolicy": "元のポリシー",
+      "source": "ソース",
+      "referrer": "リファラー",
+      "statusCode": "ステータスコード",
+      "receivedAt": "受信日時"
+    }
+  },
+  "footer": "© {year} Aleph Void, LLC — CSP 違反レシーバー"
+}

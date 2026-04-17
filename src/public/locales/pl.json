@@ -1,0 +1,55 @@
+{
+  "nav": {
+    "brand": "Aleph Void",
+    "pageTitle": "csp-receiver",
+    "live": "na żywo",
+    "disconnected": "rozłączono"
+  },
+  "page": {
+    "sectionLabel": "// Monitorowanie bezpieczeństwa",
+    "title": "Raporty naruszeń CSP",
+    "descriptionPrefix": "Naruszenia Content Security Policy odbierane w czasie rzeczywistym przez",
+    "reportTo": "report-to",
+    "reportUri": "report-uri"
+  },
+  "endpoint": {
+    "label": "Punkt końcowy",
+    "copy": "⎘ kopiuj URL",
+    "copied": "✓ skopiowano"
+  },
+  "controls": {
+    "since": "Od",
+    "violations": "brak naruszeń | {n} naruszenie | {n} naruszeń"
+  },
+  "table": {
+    "time": "Czas",
+    "document": "Dokument",
+    "violatedDirective": "Naruszona dyrektywa",
+    "blockedUri": "Zablokowany URI",
+    "status": "Stan"
+  },
+  "empty": {
+    "noViolations": "Nie odebrano żadnych naruszeń od {date}.",
+    "hintPrefix": "Skieruj dyrektywę CSP",
+    "hintOr": "lub",
+    "hintSuffix": "na"
+  },
+  "detail": {
+    "title": "// naruszenie nr {id}",
+    "close": "zamknij ✕",
+    "rawReport": "Surowy raport",
+    "nullValue": "null",
+    "fields": {
+      "documentUri": "URI dokumentu",
+      "blockedUri": "Zablokowany URI",
+      "violatedDirective": "Naruszona dyrektywa",
+      "effectiveDirective": "Obowiązująca dyrektywa",
+      "originalPolicy": "Oryginalna polityka",
+      "source": "Źródło",
+      "referrer": "Strona odsyłająca",
+      "statusCode": "Kod statusu",
+      "receivedAt": "Odebrano"
+    }
+  },
+  "footer": "© {year} Aleph Void, LLC — Odbiornik naruszeń CSP"
+}

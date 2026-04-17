@@ -1,0 +1,55 @@
+{
+  "nav": {
+    "brand": "Aleph Void",
+    "pageTitle": "csp-receiver",
+    "live": "в сети",
+    "disconnected": "отключено"
+  },
+  "page": {
+    "sectionLabel": "// Мониторинг безопасности",
+    "title": "Отчеты о нарушениях CSP",
+    "descriptionPrefix": "Нарушения Content Security Policy, полученные в реальном времени через",
+    "reportTo": "report-to",
+    "reportUri": "report-uri"
+  },
+  "endpoint": {
+    "label": "Эндпоинт",
+    "copy": "⎘ копировать URL",
+    "copied": "✓ скопировано"
+  },
+  "controls": {
+    "since": "С",
+    "violations": "нет нарушений | {n} нарушение | {n} нарушений"
+  },
+  "table": {
+    "time": "Время",
+    "document": "Документ",
+    "violatedDirective": "Нарушенная директива",
+    "blockedUri": "Заблокированный URI",
+    "status": "Статус"
+  },
+  "empty": {
+    "noViolations": "С {date} нарушений не поступало.",
+    "hintPrefix": "Направьте директиву CSP",
+    "hintOr": "или",
+    "hintSuffix": "на"
+  },
+  "detail": {
+    "title": "// нарушение № {id}",
+    "close": "закрыть ✕",
+    "rawReport": "Исходный отчет",
+    "nullValue": "null",
+    "fields": {
+      "documentUri": "URI документа",
+      "blockedUri": "Заблокированный URI",
+      "violatedDirective": "Нарушенная директива",
+      "effectiveDirective": "Эффективная директива",
+      "originalPolicy": "Исходная политика",
+      "source": "Источник",
+      "referrer": "Реферер",
+      "statusCode": "Код статуса",
+      "receivedAt": "Получено"
+    }
+  },
+  "footer": "© {year} Aleph Void, LLC — Приемник нарушений CSP"
+}

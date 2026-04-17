@@ -1,0 +1,55 @@
+{
+  "nav": {
+    "brand": "Aleph Void",
+    "pageTitle": "csp-receiver",
+    "live": "canlı",
+    "disconnected": "bağlantı kesildi"
+  },
+  "page": {
+    "sectionLabel": "// Güvenlik izleme",
+    "title": "CSP ihlal raporları",
+    "descriptionPrefix": "Aşağıdaki yollarla alınan gerçek zamanlı Content Security Policy ihlalleri",
+    "reportTo": "report-to",
+    "reportUri": "report-uri"
+  },
+  "endpoint": {
+    "label": "Uç nokta",
+    "copy": "⎘ URL'yi kopyala",
+    "copied": "✓ kopyalandı"
+  },
+  "controls": {
+    "since": "Başlangıç",
+    "violations": "ihlal yok | {n} ihlal | {n} ihlal"
+  },
+  "table": {
+    "time": "Saat",
+    "document": "Belge",
+    "violatedDirective": "İhlal edilen yönerge",
+    "blockedUri": "Engellenen URI",
+    "status": "Durum"
+  },
+  "empty": {
+    "noViolations": "{date} tarihinden beri ihlal alınmadı.",
+    "hintPrefix": "CSP",
+    "hintOr": "veya",
+    "hintSuffix": "yönergenizi şu adrese yönlendirin"
+  },
+  "detail": {
+    "title": "// ihlal #{id}",
+    "close": "kapat ✕",
+    "rawReport": "Ham rapor",
+    "nullValue": "null",
+    "fields": {
+      "documentUri": "Belge URI'si",
+      "blockedUri": "Engellenen URI",
+      "violatedDirective": "İhlal edilen yönerge",
+      "effectiveDirective": "Geçerli yönerge",
+      "originalPolicy": "Orijinal politika",
+      "source": "Kaynak",
+      "referrer": "Yönlendiren",
+      "statusCode": "Durum kodu",
+      "receivedAt": "Alınma zamanı"
+    }
+  },
+  "footer": "© {year} Aleph Void, LLC — CSP ihlal alıcısı"
+}

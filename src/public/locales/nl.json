@@ -1,0 +1,55 @@
+{
+  "nav": {
+    "brand": "Aleph Void",
+    "pageTitle": "csp-receiver",
+    "live": "live",
+    "disconnected": "verbinding verbroken"
+  },
+  "page": {
+    "sectionLabel": "// Beveiligingsmonitoring",
+    "title": "CSP-overtredingsrapporten",
+    "descriptionPrefix": "Realtime Content Security Policy-overtredingen ontvangen via",
+    "reportTo": "report-to",
+    "reportUri": "report-uri"
+  },
+  "endpoint": {
+    "label": "Eindpunt",
+    "copy": "⎘ URL kopieren",
+    "copied": "✓ gekopieerd"
+  },
+  "controls": {
+    "since": "Sinds",
+    "violations": "geen overtredingen | {n} overtreding | {n} overtredingen"
+  },
+  "table": {
+    "time": "Tijd",
+    "document": "Document",
+    "violatedDirective": "Geschonden richtlijn",
+    "blockedUri": "Geblokkeerde URI",
+    "status": "Status"
+  },
+  "empty": {
+    "noViolations": "Geen overtredingen ontvangen sinds {date}.",
+    "hintPrefix": "Laat je CSP-",
+    "hintOr": "of",
+    "hintSuffix": "richtlijn verwijzen naar"
+  },
+  "detail": {
+    "title": "// overtreding #{id}",
+    "close": "sluiten ✕",
+    "rawReport": "Ruw rapport",
+    "nullValue": "null",
+    "fields": {
+      "documentUri": "Document-URI",
+      "blockedUri": "Geblokkeerde URI",
+      "violatedDirective": "Geschonden richtlijn",
+      "effectiveDirective": "Effectieve richtlijn",
+      "originalPolicy": "Oorspronkelijk beleid",
+      "source": "Bron",
+      "referrer": "Referrer",
+      "statusCode": "Statuscode",
+      "receivedAt": "Ontvangen op"
+    }
+  },
+  "footer": "© {year} Aleph Void, LLC — Ontvanger voor CSP-overtredingen"
+}

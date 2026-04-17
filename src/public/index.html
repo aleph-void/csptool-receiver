@@ -91,6 +91,36 @@
       font-family: 'JetBrains Mono', monospace;
     }
 
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .locale-select {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-secondary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      padding: 0.3rem 0.6rem;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .locale-select:hover,
+    .locale-select:focus {
+      border-color: var(--accent-light);
+      color: var(--text-primary);
+    }
+
+    .locale-select option {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+
     .nav-status {
       display: flex;
       align-items: center;
@@ -150,6 +180,64 @@
     .page-header p {
       color: var(--text-secondary);
       font-size: 0.9rem;
+    }
+
+    /* Endpoint bar */
+    .endpoint-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1.75rem;
+      flex-wrap: wrap;
+    }
+
+    .endpoint-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .endpoint-url {
+      flex: 1;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: var(--accent-light);
+      word-break: break-all;
+      min-width: 0;
+    }
+
+    .copy-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-secondary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      padding: 0.35rem 0.75rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+
+    .copy-btn:hover {
+      border-color: var(--accent-light);
+      color: var(--text-primary);
+    }
+
+    .copy-btn.copied {
+      border-color: #22c55e;
+      color: #22c55e;
+      background: rgba(34, 197, 94, 0.08);
     }
 
     /* Controls bar */
@@ -429,64 +517,6 @@
       line-height: 1.6;
     }
 
-    /* Endpoint bar */
-    .endpoint-bar {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0.75rem 1rem;
-      margin-bottom: 1.75rem;
-      flex-wrap: wrap;
-    }
-
-    .endpoint-label {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--text-muted);
-      white-space: nowrap;
-    }
-
-    .endpoint-url {
-      flex: 1;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.82rem;
-      color: var(--accent-light);
-      word-break: break-all;
-      min-width: 0;
-    }
-
-    .copy-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      background: transparent;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      color: var(--text-secondary);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
-      padding: 0.35rem 0.75rem;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: border-color 0.2s, color 0.2s, background 0.2s;
-    }
-
-    .copy-btn:hover {
-      border-color: var(--accent-light);
-      color: var(--text-primary);
-    }
-
-    .copy-btn.copied {
-      border-color: #22c55e;
-      color: #22c55e;
-      background: rgba(34, 197, 94, 0.08);
-    }
-
     /* Footer */
     footer {
       text-align: center;
@@ -528,38 +558,50 @@
       <div class="nav-inner">
         <a href="https://alephvoid.com" class="logo-mark">
           <svg aria-label="Aleph Void"><use href="#logo-symbol"/></svg>
-          <span>Aleph Void</span>
-          <span class="page-title">csp-receiver</span>
+          <span>{{ t('nav.brand') }}</span>
+          <span class="page-title">{{ t('nav.pageTitle') }}</span>
         </a>
-        <div class="nav-status">
-          <span :class="['status-dot', connected ? 'live' : '']"></span>
-          <span style="color: var(--text-muted)">{{ connected ? 'live' : 'disconnected' }}</span>
+        <div class="nav-right">
+          <select class="locale-select" :value="currentLocale" @change="onLocaleChange($event.target.value)">
+            <option v-for="loc in availableLocales" :key="loc.code" :value="loc.code">
+              {{ loc.flag }} {{ loc.label }}
+            </option>
+          </select>
+          <div class="nav-status">
+            <span :class="['status-dot', connected ? 'live' : '']"></span>
+            <span style="color: var(--text-muted)">{{ connected ? t('nav.live') : t('nav.disconnected') }}</span>
+          </div>
         </div>
       </div>
     </nav>
 
     <main>
       <div class="page-header">
-        <p class="section-label">// Security Monitoring</p>
-        <h1>CSP Violation Reports</h1>
-        <p>Real-time Content Security Policy violations received via <code style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;background:var(--bg-card);border:1px solid var(--border);padding:0.1rem 0.35rem;border-radius:4px;color:var(--accent-light)">report-to</code> / <code style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;background:var(--bg-card);border:1px solid var(--border);padding:0.1rem 0.35rem;border-radius:4px;color:var(--accent-light)">report-uri</code></p>
+        <p class="section-label">{{ t('page.sectionLabel') }}</p>
+        <h1>{{ t('page.title') }}</h1>
+        <p>
+          {{ t('page.descriptionPrefix') }}
+          <code style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;background:var(--bg-card);border:1px solid var(--border);padding:0.1rem 0.35rem;border-radius:4px;color:var(--accent-light)">{{ t('page.reportTo') }}</code>
+          /
+          <code style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;background:var(--bg-card);border:1px solid var(--border);padding:0.1rem 0.35rem;border-radius:4px;color:var(--accent-light)">{{ t('page.reportUri') }}</code>
+        </p>
       </div>
 
       <div class="endpoint-bar">
-        <span class="endpoint-label">Endpoint</span>
+        <span class="endpoint-label">{{ t('endpoint.label') }}</span>
         <span class="endpoint-url">{{ endpointUrl }}</span>
         <button :class="['copy-btn', copied ? 'copied' : '']" @click="copyUrl">
-          {{ copied ? '&#x2713; copied' : '&#x2398; copy url' }}
+          {{ copied ? t('endpoint.copied') : t('endpoint.copy') }}
         </button>
       </div>
 
       <div class="controls">
         <div class="control-group">
-          <label>Since</label>
+          <label>{{ t('controls.since') }}</label>
           <input type="date" v-model="sinceDate" @change="fetchViolations">
         </div>
         <span :class="['badge', violations.length > 0 ? 'danger' : '']">
-          {{ violations.length }} violation{{ violations.length !== 1 ? 's' : '' }}
+          {{ violationsBadge }}
         </span>
       </div>
 
@@ -567,11 +609,11 @@
         <table>
           <thead>
             <tr>
-              <th>Time</th>
-              <th>Document</th>
-              <th>Violated Directive</th>
-              <th>Blocked URI</th>
-              <th>Status</th>
+              <th>{{ t('table.time') }}</th>
+              <th>{{ t('table.document') }}</th>
+              <th>{{ t('table.violatedDirective') }}</th>
+              <th>{{ t('table.blockedUri') }}</th>
+              <th>{{ t('table.status') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -592,155 +634,212 @@
       </div>
 
       <div v-else class="empty-state">
-        <div class="icon">&#x1f6e1;</div>
-        <p>No violations received since <strong>{{ sinceDate }}</strong>.</p>
-        <p style="margin-top:0.75rem">Point your CSP <code>report-to</code> or <code>report-uri</code> directive to <code>POST /violations</code></p>
+        <div class="icon">🛡</div>
+        <p>{{ t('empty.noViolations', { date: sinceDate }) }}</p>
+        <p style="margin-top:0.75rem">
+          {{ t('empty.hintPrefix') }}
+          <code>{{ t('page.reportTo') }}</code>
+          {{ t('empty.hintOr') }}
+          <code>{{ t('page.reportUri') }}</code>
+          {{ t('empty.hintSuffix') }}
+          <code>POST /violations</code>
+        </p>
       </div>
 
       <div v-if="selectedViolation" class="detail-panel">
         <div class="detail-header">
-          <h2>// violation #{{ selectedViolation.id }}</h2>
-          <button @click="selectedViolation = null">close ✕</button>
+          <h2>{{ t('detail.title', { id: selectedViolation.id }) }}</h2>
+          <button @click="selectedViolation = null">{{ t('detail.close') }}</button>
         </div>
         <div class="detail-grid">
           <div class="detail-field">
-            <div class="field-label">Document URI</div>
-            <div :class="['field-value', selectedViolation.document_uri ? '' : 'null-val']">{{ selectedViolation.document_uri || 'null' }}</div>
+            <div class="field-label">{{ t('detail.fields.documentUri') }}</div>
+            <div :class="['field-value', selectedViolation.document_uri ? '' : 'null-val']">{{ selectedViolation.document_uri || t('detail.nullValue') }}</div>
           </div>
           <div class="detail-field">
-            <div class="field-label">Blocked URI</div>
-            <div :class="['field-value', selectedViolation.blocked_uri ? '' : 'null-val']">{{ selectedViolation.blocked_uri || 'null' }}</div>
+            <div class="field-label">{{ t('detail.fields.blockedUri') }}</div>
+            <div :class="['field-value', selectedViolation.blocked_uri ? '' : 'null-val']">{{ selectedViolation.blocked_uri || t('detail.nullValue') }}</div>
           </div>
           <div class="detail-field">
-            <div class="field-label">Violated Directive</div>
+            <div class="field-label">{{ t('detail.fields.violatedDirective') }}</div>
             <div class="field-value mono">{{ selectedViolation.violated_directive || '—' }}</div>
           </div>
           <div class="detail-field">
-            <div class="field-label">Effective Directive</div>
+            <div class="field-label">{{ t('detail.fields.effectiveDirective') }}</div>
             <div class="field-value mono">{{ selectedViolation.effective_directive || '—' }}</div>
           </div>
           <div class="detail-field">
-            <div class="field-label">Original Policy</div>
-            <div :class="['field-value', selectedViolation.original_policy ? 'mono' : 'null-val']" style="font-size:0.75rem">{{ selectedViolation.original_policy || 'null' }}</div>
+            <div class="field-label">{{ t('detail.fields.originalPolicy') }}</div>
+            <div :class="['field-value', selectedViolation.original_policy ? 'mono' : 'null-val']" style="font-size:0.75rem">{{ selectedViolation.original_policy || t('detail.nullValue') }}</div>
           </div>
           <div class="detail-field">
-            <div class="field-label">Source</div>
+            <div class="field-label">{{ t('detail.fields.source') }}</div>
             <div :class="['field-value', selectedViolation.source_file ? '' : 'null-val']">
-              {{ selectedViolation.source_file ? `${selectedViolation.source_file}:${selectedViolation.line_number ?? '?'}:${selectedViolation.column_number ?? '?'}` : 'null' }}
+              {{ selectedViolation.source_file ? `${selectedViolation.source_file}:${selectedViolation.line_number ?? '?'}:${selectedViolation.column_number ?? '?'}` : t('detail.nullValue') }}
             </div>
           </div>
           <div class="detail-field">
-            <div class="field-label">Referrer</div>
-            <div :class="['field-value', selectedViolation.referrer ? '' : 'null-val']">{{ selectedViolation.referrer || 'null' }}</div>
+            <div class="field-label">{{ t('detail.fields.referrer') }}</div>
+            <div :class="['field-value', selectedViolation.referrer ? '' : 'null-val']">{{ selectedViolation.referrer || t('detail.nullValue') }}</div>
           </div>
           <div class="detail-field">
-            <div class="field-label">Status Code</div>
-            <div :class="['field-value mono', selectedViolation.status_code != null ? '' : 'null-val']">{{ selectedViolation.status_code != null ? selectedViolation.status_code : 'null' }}</div>
+            <div class="field-label">{{ t('detail.fields.statusCode') }}</div>
+            <div :class="['field-value mono', selectedViolation.status_code != null ? '' : 'null-val']">{{ selectedViolation.status_code != null ? selectedViolation.status_code : t('detail.nullValue') }}</div>
           </div>
           <div class="detail-field">
-            <div class="field-label">Received At</div>
+            <div class="field-label">{{ t('detail.fields.receivedAt') }}</div>
             <div class="field-value mono">{{ selectedViolation.received_at }}</div>
           </div>
         </div>
         <div class="raw-json">
-          <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:0.5rem">Raw Report</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:0.5rem">{{ t('detail.rawReport') }}</div>
           <pre>{{ formatRaw(selectedViolation.raw) }}</pre>
         </div>
       </div>
     </main>
 
     <footer>
-      &copy; {{ year }} Aleph Void, LLC &mdash; CSP Violation Receiver
+      {{ t('footer', { year }) }}
     </footer>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.prod.js"></script>
+  <script src="https://unpkg.com/vue-i18n@9.14.1/dist/vue-i18n.global.prod.js"></script>
   <script>
-    const { createApp, ref, reactive, onMounted, computed } = Vue;
+    const { createApp, ref, computed, onMounted } = Vue;
+    const { createI18n, useI18n } = VueI18n;
 
-    createApp({
-      setup() {
-        const violations = ref([]);
-        const connected = ref(false);
-        const selectedViolation = ref(null);
-        const newIdsMap = ref({});
-        const sinceDate = ref(new Date().toISOString().split('T')[0]);
-        const year = new Date().getFullYear();
-        const endpointUrl = `${window.location.origin}/violations`;
-        const copied = ref(false);
+    (async () => {
+      const savedLocale  = localStorage.getItem('csp-locale') || 'en';
+      const [registry, initialMessages] = await Promise.all([
+        fetch('/locales/registry.json').then(r => r.json()),
+        fetch(`/locales/${savedLocale}.json`).then(r => r.json()),
+      ]);
 
-        async function copyUrl() {
-          try {
-            await navigator.clipboard.writeText(endpointUrl);
-          } catch {
-            // Fallback for non-secure contexts
-            const el = document.createElement('textarea');
-            el.value = endpointUrl;
-            el.style.position = 'fixed';
-            el.style.opacity = '0';
-            document.body.appendChild(el);
-            el.select();
-            document.execCommand('copy');
-            document.body.removeChild(el);
-          }
-          copied.value = true;
-          setTimeout(() => { copied.value = false; }, 2000);
-        }
-
-        const socket = io();
-
-        socket.on('connect', () => { connected.value = true; });
-        socket.on('disconnect', () => { connected.value = false; });
-
-        socket.on('initial', (data) => {
-          violations.value = data;
-        });
-
-        socket.on('violation', (v) => {
-          const since = new Date(sinceDate.value + 'T00:00:00.000Z');
-          if (new Date(v.received_at) >= since) {
-            violations.value.unshift(v);
-            newIdsMap.value = { ...newIdsMap.value, [v.id]: true };
-            setTimeout(() => {
-              const updated = { ...newIdsMap.value };
-              delete updated[v.id];
-              newIdsMap.value = updated;
-            }, 2000);
-          }
-        });
-
-        async function fetchViolations() {
-          const res = await fetch(`/violations?since=${sinceDate.value}`);
-          violations.value = await res.json();
-          selectedViolation.value = null;
-        }
-
-        function toggleDetail(v) {
-          selectedViolation.value = selectedViolation.value && selectedViolation.value.id === v.id ? null : v;
-        }
-
-        function formatTime(ts) {
-          return new Date(ts).toLocaleString(undefined, {
-            month: 'short', day: 'numeric',
-            hour: '2-digit', minute: '2-digit', second: '2-digit',
-          });
-        }
-
-        function formatRaw(raw) {
-          try { return JSON.stringify(JSON.parse(raw), null, 2); } catch { return raw; }
-        }
-
-        onMounted(fetchViolations);
-
-        return {
-          violations, connected, selectedViolation,
-          newIdsMap, sinceDate, year,
-          endpointUrl, copied, copyUrl,
-          fetchViolations, toggleDetail, formatTime, formatRaw,
-        };
+      // Seed with the saved locale; English is loaded on-demand if it wasn't the saved locale.
+      const seedMessages = { [savedLocale]: initialMessages };
+      if (savedLocale !== 'en') {
+        seedMessages['en'] = await fetch('/locales/en.json').then(r => r.json());
       }
-    }).mount('#app');
+
+      const i18n = createI18n({
+        legacy: false,
+        locale: savedLocale,
+        fallbackLocale: 'en',
+        messages: seedMessages,
+      });
+
+      const loadedCodes = new Set(Object.keys(seedMessages));
+
+      const app = createApp({
+        setup() {
+          const { t, locale } = useI18n();
+          const currentLocale  = ref(locale.value);
+          const availableLocales = ref(registry);
+
+          async function onLocaleChange(code) {
+            if (!loadedCodes.has(code)) {
+              const msgs = await fetch(`/locales/${code}.json`).then(r => r.json());
+              i18n.global.setLocaleMessage(code, msgs);
+              loadedCodes.add(code);
+            }
+            locale.value        = code;
+            currentLocale.value = code;
+            localStorage.setItem('csp-locale', code);
+            document.documentElement.lang = code;
+          }
+
+          const violations       = ref([]);
+          const connected        = ref(false);
+          const selectedViolation = ref(null);
+          const newIdsMap        = ref({});
+          const sinceDate        = ref(new Date().toISOString().split('T')[0]);
+          const year             = new Date().getFullYear();
+          const endpointUrl      = `${window.location.origin}/violations`;
+          const copied           = ref(false);
+
+          const violationsBadge = computed(() => {
+            const n = violations.value.length;
+            return t('controls.violations', { n }, n);
+          });
+
+          const socket = io();
+
+          socket.on('connect', () => { connected.value = true; });
+          socket.on('disconnect', () => { connected.value = false; });
+
+          socket.on('initial', (data) => {
+            violations.value = data;
+          });
+
+          socket.on('violation', (v) => {
+            const since = new Date(sinceDate.value + 'T00:00:00.000Z');
+            if (new Date(v.received_at) >= since) {
+              violations.value.unshift(v);
+              newIdsMap.value = { ...newIdsMap.value, [v.id]: true };
+              setTimeout(() => {
+                const updated = { ...newIdsMap.value };
+                delete updated[v.id];
+                newIdsMap.value = updated;
+              }, 2000);
+            }
+          });
+
+          async function fetchViolations() {
+            const res = await fetch(`/violations?since=${sinceDate.value}`);
+            violations.value = await res.json();
+            selectedViolation.value = null;
+          }
+
+          function toggleDetail(v) {
+            selectedViolation.value = selectedViolation.value && selectedViolation.value.id === v.id ? null : v;
+          }
+
+          function formatTime(ts) {
+            return new Date(ts).toLocaleString(undefined, {
+              month: 'short', day: 'numeric',
+              hour: '2-digit', minute: '2-digit', second: '2-digit',
+            });
+          }
+
+          function formatRaw(raw) {
+            try { return JSON.stringify(JSON.parse(raw), null, 2); } catch { return raw; }
+          }
+
+          async function copyUrl() {
+            try {
+              await navigator.clipboard.writeText(endpointUrl);
+            } catch {
+              const el = document.createElement('textarea');
+              el.value = endpointUrl;
+              el.style.position = 'fixed';
+              el.style.opacity = '0';
+              document.body.appendChild(el);
+              el.select();
+              document.execCommand('copy');
+              document.body.removeChild(el);
+            }
+            copied.value = true;
+            setTimeout(() => { copied.value = false; }, 2000);
+          }
+
+          onMounted(fetchViolations);
+
+          return {
+            t,
+            violations, connected, selectedViolation,
+            newIdsMap, sinceDate, year,
+            endpointUrl, copied, violationsBadge,
+            currentLocale, availableLocales, onLocaleChange,
+            copyUrl, fetchViolations, toggleDetail, formatTime, formatRaw,
+          };
+        },
+      });
+
+      app.use(i18n);
+      app.mount('#app');
+    })();
   </script>
 </body>
 </html>

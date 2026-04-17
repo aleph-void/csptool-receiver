@@ -1,0 +1,55 @@
+{
+  "nav": {
+    "brand": "Aleph Void",
+    "pageTitle": "csp-receiver",
+    "live": "en direct",
+    "disconnected": "déconnecté"
+  },
+  "page": {
+    "sectionLabel": "// Surveillance de sécurité",
+    "title": "Rapports de violation CSP",
+    "descriptionPrefix": "Violations de Content Security Policy reçues en temps réel via",
+    "reportTo": "report-to",
+    "reportUri": "report-uri"
+  },
+  "endpoint": {
+    "label": "Point de terminaison",
+    "copy": "⎘ copier l'URL",
+    "copied": "✓ copié"
+  },
+  "controls": {
+    "since": "Depuis",
+    "violations": "aucune violation | {n} violation | {n} violations"
+  },
+  "table": {
+    "time": "Heure",
+    "document": "Document",
+    "violatedDirective": "Directive violée",
+    "blockedUri": "URI bloquée",
+    "status": "Statut"
+  },
+  "empty": {
+    "noViolations": "Aucune violation reçue depuis {date}.",
+    "hintPrefix": "Pointez votre directive CSP",
+    "hintOr": "ou",
+    "hintSuffix": "vers"
+  },
+  "detail": {
+    "title": "// violation n° {id}",
+    "close": "fermer ✕",
+    "rawReport": "Rapport brut",
+    "nullValue": "null",
+    "fields": {
+      "documentUri": "URI du document",
+      "blockedUri": "URI bloquée",
+      "violatedDirective": "Directive violée",
+      "effectiveDirective": "Directive effective",
+      "originalPolicy": "Politique d'origine",
+      "source": "Source",
+      "referrer": "Référent",
+      "statusCode": "Code de statut",
+      "receivedAt": "Reçu le"
+    }
+  },
+  "footer": "© {year} Aleph Void, LLC — Récepteur de violations CSP"
+}
