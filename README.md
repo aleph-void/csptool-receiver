@@ -29,7 +29,77 @@ The server listens on port `3000` by default. Open `http://localhost:3000` to vi
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `PORT` | `3000` | HTTP port to listen on |
+| `HOST` | `0.0.0.0` | Bind address; installer sets `127.0.0.1` behind nginx |
 | `DB_PATH` | `./violations.db` | Path to the SQLite database file |
+
+## Ubuntu 26 server installer
+
+From a checkout on an Ubuntu 26.x server using systemd (amd64 or arm64):
+
+```bash
+sudo ./install.sh reports.example.com
+```
+
+This reuses a matching certificate in `/etc/letsencrypt/live/`. The exact hostname's lineage is preferred, then other lineages are checked for a matching SAN, including wildcard certificates. Use `--cert-name example.com-0001` to select one explicitly. An expired matching certificate is renewed with its existing Certbot renewal configuration before use. Certificates must cover the hostname and match the private key. No self-signed fallback is installed.
+
+If there is no certificate yet, create a Cloudflare credentials file and supply an ACME email address:
+
+```bash
+sudo install -d -m 700 /root/.secrets/certbot
+sudoedit /root/.secrets/certbot/cloudflare.ini
+sudo chmod 600 /root/.secrets/certbot/cloudflare.ini
+```
+
+The file contains a Cloudflare API token with **Zone / DNS / Edit** access scoped to the relevant zone:
+
+```ini
+dns_cloudflare_api_token = YOUR_CLOUDFLARE_API_TOKEN
+```
+
+Then run:
+
+```bash
+sudo ./install.sh reports.example.com \
+  --email admin@example.com \
+  --cloudflare-credentials /root/.secrets/certbot/cloudflare.ini
+```
+
+New issuance uses Certbot's Cloudflare DNS-01 plugin and accepts the Let's Encrypt subscriber agreement. The credentials are copied to `/etc/letsencrypt/csptool-receiver/cloudflare.ini` with root-only permissions so renewals do not depend on your checkout or login account. Existing certificate reuse does not require a new credentials file. The default input credential path is `/etc/letsencrypt/cloudflare.ini`.
+
+The installer:
+
+- Installs nginx, Certbot, the Cloudflare plugin, and native build prerequisites through apt.
+- Downloads a dedicated official Node 24 runtime and verifies its published SHA-256 checksum. Ubuntu 26.04's stock Node 22 is not used or replaced. Choose `--node-major 26` if desired.
+- Installs production dependencies as the unprivileged `csptool-receiver` user and makes the application release root-owned afterward.
+- Runs the receiver as a boot-enabled systemd service, listening only on `127.0.0.1:3000`. Use `--port 3456` to select another backend port.
+- Configures nginx on ports 80/443, redirects HTTP to HTTPS with status 308, and proxies the dashboard, report API, and Socket.io WebSockets.
+- Enables `certbot.timer` and installs a deploy hook that validates and reloads nginx after renewal. Existing Certbot authentication settings are preserved for reused lineages.
+- Validates nginx and checks backend and HTTPS health before reporting success. Failures during activation restore the previous app link and managed configuration; packages, certificates, and staged releases are not removed.
+
+Point the hostname's DNS at the server and allow inbound TCP ports 80 and 443 in your firewall. The script does not modify DNS address records or firewall rules. For a Cloudflare-proxied hostname, use Full (strict) TLS; DNS-01 issuance does not require disabling the proxy. The dashboard and GET API have no built-in authentication, so apply your own access controls if reports should not be public.
+
+### Updating and operating the installed service
+
+Pull the desired revision in your checkout and rerun the same command. The installer manages one receiver instance per server and refuses to overwrite unmarked service/nginx files. Other nginx sites are left in place. Application releases are retained under `/opt/csptool-receiver/releases`; `current` points to the active release. SQLite data lives separately at `/var/lib/csptool-receiver/violations.db` and is preserved across upgrades. An existing database in the source checkout is **not** imported automatically.
+
+```bash
+./install.sh reports.example.com --dry-run
+sudo systemctl status csptool-receiver nginx certbot.timer
+sudo journalctl -u csptool-receiver -f
+sudo certbot renew --dry-run
+```
+
+Back up the SQLite database using SQLite's backup API, or stop the receiver before copying the database and any WAL files. Service configuration is in `/etc/csptool-receiver/receiver.env`; rerunning the installer regenerates it from the selected options. nginx configuration is in `/etc/nginx/sites-available/csptool-receiver`. Certbot certificates stay at their original paths, so nginx sees renewed files through Certbot's normal symlinks.
+
+### Installer validation
+
+```bash
+npm test -- --runInBand
+docker build -f tests/deployment/Dockerfile -t receiver-installer-test .
+docker run --rm -v "$PWD:/source:ro" receiver-installer-test
+```
+
+The smoke test runs in a disposable Ubuntu 26.04 container with real nginx, Node, SQLite, HTTPS, and WebSocket requests. It tests certificate reuse, upgrades with retained data, configuration rollback, and the Cloudflare issuance/renewal-hook path. Certbot issuance and systemd lifecycle commands are simulated; no real Cloudflare credentials or ACME account are used, and host configuration is not modified. The generated service unit is checked with `systemd-analyze verify`. Live ACME issuance and boot-time systemd behavior still require verification on the target server.
 
 ## CSP configuration
 

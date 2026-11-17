@@ -46,6 +46,7 @@ function createApp(db) {
   const app = express();
 
   app.use(express.json({ type: JSON_TYPES }));
+  app.get('/healthz', (_req, res) => res.json({ status: 'ok' }));
   app.use(express.static(path.join(__dirname, 'public')));
 
   app.post('/violations', (req, res) => {
