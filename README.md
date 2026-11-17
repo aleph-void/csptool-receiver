@@ -12,10 +12,13 @@ An Express 5 web application that receives, persists, and visualises Content Sec
 - **SQLite persistence** via `better-sqlite3` (WAL mode, zero external dependencies)
 - **Socket.io** — pushes new violations to all connected dashboard clients the moment they are received
 
+Requires Node 24 or Node 26 (Node 24 is the default). After switching Node versions, run `npm ci` again to install the matching native SQLite binary.
+
 ## Quick start
 
 ```bash
-npm install
+nvm use
+npm ci
 npm start
 ```
 
@@ -125,7 +128,7 @@ docker compose up -d
 
 The workflow at `.github/workflows/ci.yml` runs on every pull request and push to `main`:
 
-1. Runs the test suite against Node.js 20 and 22
+1. Runs the test suite against Node.js 24 and 26
 2. Builds the Docker image to verify the `Dockerfile` is valid
 
 Merging to `main` requires all checks to pass.
@@ -147,3 +150,22 @@ csptool-receiver/
 ├── Dockerfile
 └── .github/workflows/ci.yml
 ```
+
+## Use with CSP Tool
+
+With sibling checkouts of `csptool` and `csptool-receiver`:
+
+1. Start this receiver with `npm start` and open `http://localhost:3000`.
+2. Open the target page and the CSP Tool popup. Add `report-uri` with the value `http://localhost:3000/violations` to the policy being tested.
+3. Disable any existing `report-to` directive when using this local legacy setup. Supporting browsers prefer `report-to` and may ignore `report-uri` even when the reporting group is not configured.
+4. Click Apply and exercise the page. Browser-generated reports appear in this dashboard and are persisted in SQLite.
+
+Use a reachable HTTPS receiver for remote or HTTPS deployments. `localhost` always means the browser user's machine. The modern `report-to` flow requires the tested site's `Reporting-Endpoints` header naming an HTTPS endpoint, as shown above; a group name in CSP alone is insufficient. Reporting API delivery may be batched. The extension's Errors tab also shows DOM violation events; these are distinct from successful delivery of HTTP reports.
+
+To verify the integration, install both projects' dependencies using the same Node version, then run from the `csptool` directory:
+
+```bash
+npm run test:receiver
+```
+
+That suite starts an isolated receiver with a temporary SQLite database, applies CSP through the built extension, checks a real browser report, verifies Socket.io delivery and persisted rows, and checks the modern report payload contract. It does not touch your running receiver or `violations.db`. Set `CSP_RECEIVER_DIR` if the receiver checkout is elsewhere.
