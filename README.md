@@ -4,6 +4,12 @@
 
 An Express 5 web application that receives, persists, and visualises Content Security Policy violation reports in real time. Built for [Aleph Void, LLC](https://alephvoid.com).
 
+## Dashboard
+
+![CSP Violation Receiver dashboard showing a date filter, live connection status, and received script-src reports](images/receiver.png)
+
+Filter reports by date, copy the reporting endpoint, and select a violation to inspect its policy, source location, and raw report JSON. The dashboard offers 13 interface languages and updates through Socket.io as reports arrive. The screenshot has its receiver hostname redacted.
+
 ## Features
 
 - **POST `/violations`** — accepts reports from both the legacy `report-uri` directive (`application/csp-report`) and the modern Reporting API `report-to` directive (`application/reports+json`)
