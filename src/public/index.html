@@ -529,6 +529,25 @@
       margin-top: 4rem;
     }
 
+    .footer-links {
+      margin-top: 0.5rem;
+      display: flex;
+      justify-content: center;
+      gap: 1.25rem;
+    }
+
+    .footer-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+
+    .footer-links a:hover,
+    .footer-links a:focus-visible {
+      color: var(--accent-light);
+      text-decoration: underline;
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
       nav { padding: 0.75rem 1rem; }
@@ -701,7 +720,11 @@
     </main>
 
     <footer>
-      {{ t('footer', { year }) }}
+      <div>{{ t('footer', { year }) }}</div>
+      <div class="footer-links">
+        <a href="https://github.com/aleph-void/csptool-receiver" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://alephvoid.com" target="_blank" rel="noopener noreferrer">alephvoid.com</a>
+      </div>
     </footer>
   </div>
 
