@@ -51,3 +51,13 @@ jobs:
 
       - name: Build Docker image
         run: docker build -t csptool-receiver:ci .
+
+  ubuntu-installer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Ubuntu 26.04 installer test image
+        run: docker build -f tests/deployment/Dockerfile -t receiver-installer-test .
+      - name: Test installation, nginx TLS, upgrades, and rollback
+        run: docker run --rm -v "$PWD:/source:ro" receiver-installer-test
