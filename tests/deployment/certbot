@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Never call an ACME service or use real credentials in tests.
+set -euo pipefail
+printf '%s\n' "$*" >> /tmp/certbot-calls
+host=''
+while (($#)); do
+  if [[ $1 == -d ]]; then host=$2; shift 2; else shift; fi
+done
+[[ -n $host ]]
+lineage=/etc/letsencrypt/live/$host
+mkdir -p "$lineage"
+openssl req -x509 -newkey rsa:2048 -nodes -days 2 -subj "/CN=$host" \
+  -addext "subjectAltName=DNS:$host" -keyout "$lineage/privkey.pem" -out "$lineage/fullchain.pem" 2>/dev/null
+cp "$lineage/fullchain.pem" "/usr/local/share/ca-certificates/$host.crt"
+update-ca-certificates >/dev/null

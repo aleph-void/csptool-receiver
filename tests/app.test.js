@@ -264,3 +264,14 @@ describe('GET /', () => {
     expect(res.text).toContain('CSP Violation');
   });
 });
+
+describe('service health', () => {
+  test('healthz is available for service startup checks', async () => {
+    const db = createDb(':memory:');
+    try {
+      const response = await request(createApp(db)).get('/healthz');
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({ status: 'ok' });
+    } finally { db.close(); }
+  });
+});

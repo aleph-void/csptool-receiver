@@ -6,6 +6,7 @@ const { createApp } = require('./src/app');
 const { createDb } = require('./src/db');
 
 const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || '0.0.0.0';
 const DB_PATH = process.env.DB_PATH || './violations.db';
 
 const db = createDb(DB_PATH);
@@ -21,7 +22,7 @@ io.on('connection', (socket) => {
   socket.emit('initial', violations);
 });
 
-httpServer.listen(PORT, () => {
+httpServer.listen(PORT, HOST, () => {
   console.log(`CSP Receiver running on port ${PORT}`);
 });
 
