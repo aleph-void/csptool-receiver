@@ -131,7 +131,16 @@ The workflow at `.github/workflows/ci.yml` runs on every pull request and push t
 1. Runs the test suite against Node.js 24 and 26
 2. Builds the Docker image to verify the `Dockerfile` is valid
 
-Merging to `main` requires all checks to pass.
+The test matrix also runs for Dependabot pull requests. CI uses a read-only token, bounded job timeouts, and cancels superseded runs on the same branch. These workflow checks do not themselves enforce branch protection; configure required status checks in repository rules if merges must be blocked on failures.
+
+### Security automation
+
+- `.github/dependabot.yml` checks npm dependencies, Docker images, and GitHub Actions weekly. npm minor/patch updates and Action updates are grouped to reduce PR noise; npm major updates remain separate. Dependabot does not auto-merge updates.
+- `.github/workflows/codeql.yml` scans JavaScript/TypeScript and GitHub Actions on pull requests, pushes to `main`, weekly, and manual dispatch. It uses CodeQL's no-build mode and does not execute application dependency install scripts.
+- CodeQL has an explicit public-repository guard. While this repository is private, the analysis jobs are skipped; making it public enables the workflow without a paid Code Security subscription. To run CodeQL while private, an administrator must separately enable GitHub Code Security and deliberately adjust this guard.
+- Dependabot version updates start when the configuration reaches the default branch. Dependabot alerts and automated security updates are separate repository settings.
+
+Standard hosted Actions runners and CodeQL are free for public repositories. Private-repository CI consumes the account's included Actions usage and may incur overage charges. Dependabot is available for both public and private repositories. See [GitHub Actions billing](https://docs.github.com/en/billing/concepts/product-billing/github-actions) and [CodeQL availability](https://docs.github.com/en/code-security/concepts/code-scanning/codeql/codeql-code-scanning).
 
 ## Project structure
 
